@@ -16,6 +16,6 @@ By the end of this workshop you will have learned the following:
 ## Table of contents
 
 1. [AWS Distro for OpenTelemetry using EKS Add-Ons Installation](1_eks_add_on.md)
-2. [# Running Application on EKS](2_eks_app.md)
+2. [Running Application on EKS](2_eks_app.md)
 
 ---

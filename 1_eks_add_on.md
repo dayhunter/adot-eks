@@ -198,7 +198,8 @@ kubectl apply -f otel-collector-config.yaml
 ```sh
 opentelemetrycollector.opentelemetry.io/my-adot-collector created
 ```
-Describe 
+
+3.3 Opentelemetry Configuration Details
 
 ```yaml
 apiVersion: opentelemetry.io/v1alpha1
@@ -230,6 +231,7 @@ spec:
           exporters: [awsxray]
 ```
 
+3.4 Describe Opentelemetry Collector Pod
 
 ```sh
 export OTEL_COLLECTOR_POD_NAME=$(kubectl get pods -n otel -o jsonpath='{.items[].metadata.name}')
@@ -318,7 +320,7 @@ Events:
 ```
 
 
-Congratulations!! You have completed this section. Please continue on
+Congratulations!! You have completed this section. Please continue on [Running Application on EKS](2_eks_app.md)
 
 ---
 
