@@ -1,7 +1,5 @@
 # Running Application on EKS
 
----
-
 ## 1. Create an ECR Repository
 
 1.1 In the AWS Management Console, navigate to `Amazon ECR`.
@@ -103,6 +101,19 @@ kubectl apply -f ./hello-app
 ```
 kubectl apply -f ./hello-app
 ```
+
+3.4 Check that application is ready with the following command
+
+```sh
+kubectl get po -n hello-app
+```
+##### Result Output
+```
+NAME                         READY   STATUS    RESTARTS   AGE
+hello-app-5887979795-8ldn7   1/1     Running   0          10s
+```
+
+Congratulations!! You have completed this section. Please continue on [Running Application on EKS](2_eks_app.md)
 
 ---
 

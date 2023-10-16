@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-app
+  namespace: hello-app
+  labels:
+    app.kubernetes.io/created-by: eks-workshop
+    app.kubernetes.io/type: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hello-app
+      app.kubernetes.io/instance: hello-app
+      app.kubernetes.io/component: service
+  template:
+    metadata:
+      # annotations:
+      #   prometheus.io/path: /actuator/prometheus
+      #   prometheus.io/port: "8080"
+      #   prometheus.io/scrape: "true"
+      labels:
+        app.kubernetes.io/name: hello-app
+        app.kubernetes.io/instance: hello-app
+        app.kubernetes.io/component: service
+        app.kubernetes.io/created-by: eks-workshop
+    spec:
+      serviceAccountName: hello-app
+      containers:
+        - name: hello-app
+          env:
+            - name: OTEL_TRACES_EXPORTER
+              value: otlp
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://adot-collector.otel:4317
+            - name: OTEL_TRACES_SAMPLER
+              value: always_on
+            - name: OTEL_IMR_EXPORT_INTERVAL
+              value: "5000"
+            - name: OTEL_METRIC_EXPORT_INTERVAL
+              value: "5000"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: service.name=hello-app,service.version=1.0,deployment.environment=production
+          # securityContext:
+          #   capabilities:
+          #     drop:
+          #     - ALL
+          #   readOnlyRootFilesystem: true
+          #   runAsNonRoot: true
+          #   runAsUser: 1000
+          image: "273168336574.dkr.ecr.us-east-2.amazonaws.com/hello-app:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /actuator/health/liveness
+          #     port: 8080
+          #   initialDelaySeconds: 45
+          #   periodSeconds: 3
+          # readinessProbe:
+          #   httpGet:
+          #     path: /actuator/health/liveness
+          #     port: 8080
+          #   successThreshold: 3
+          #   periodSeconds: 5
+          resources:
+            limits:
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 1Gi
+      #     volumeMounts:
+      #       - mountPath: /tmp
+      #         name: tmp-volume
+      # volumes:
+      #   - name: tmp-volume
+      #     emptyDir:
+      #       medium: Memory

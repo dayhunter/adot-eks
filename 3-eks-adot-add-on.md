@@ -1,5 +1,4 @@
 # AWS Distro for OpenTelemetry using EKS Add-Ons Installation
----
 
 Welcome to the getting started guide for AWS Distro for OpenTelemetry (ADOT) using Elastic Kubernetes Service (EKS) add-ons. This guide shows you how to leverage Amazon EKS add-ons to install and manage ADOT within your Amazon EKS cluster.
 
@@ -191,7 +190,8 @@ arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy grants access to write the C
 3.2 Deploy the ADOT Collector
 
 ```sh
-sed -i -e s/AWS_REGION/$AWS_REGION/g otel-collector-config.yaml
+cd ~/environment/workshop/3-eks-adot-add-on/
+sed -i -e s/\<AWS_REGION\>/${AWS_REGION}/g otel-collector-config.yaml
 kubectl apply -f otel-collector-config.yaml
 ```
 ##### Result Output
@@ -200,6 +200,8 @@ opentelemetrycollector.opentelemetry.io/my-adot-collector created
 ```
 
 3.3 Opentelemetry Configuration Details
+
+<img src="./images/otel_collector.png" width=80%/>
 
 ```yaml
 apiVersion: opentelemetry.io/v1alpha1
@@ -221,7 +223,7 @@ spec:
 
     exporters:
       awsxray:
-        region: us-east-2
+        region: <YOUR_AWS_REGION>
 
     service:
       pipelines:
@@ -231,13 +233,15 @@ spec:
           exporters: [awsxray]
 ```
 
+**Note** This collector we will be using on next section. to send trace data to AWS X-Ray
+
 3.4 Describe Opentelemetry Collector Pod
 
 ```sh
 export OTEL_COLLECTOR_POD_NAME=$(kubectl get pods -n otel -o jsonpath='{.items[].metadata.name}')
 kubectl describe pod $OTEL_COLLECTOR_POD_NAME -n otel
 ```
-
+##### Result Output
 ```
 Name:             my-adot-collector-collector-f8f976c4-lr7x9
 Namespace:        otel
@@ -319,8 +323,30 @@ Events:
   Normal  Started    5s    kubelet            Started container otc-container
 ```
 
+3.4 Check Opentelemetry Collector Pod Log
 
-Congratulations!! You have completed this section. Please continue on [Running Application on EKS](2_eks_app.md)
+```sh
+export OTEL_COLLECTOR_POD_NAME=$(kubectl get pods -n otel -o jsonpath='{.items[].metadata.name}')
+kubectl logs -f $OTEL_COLLECTOR_POD_NAME -n otel
+```
+##### Result Output
+```
+2023/10/15 14:00:09 ADOT Collector version: v0.33.3
+2023/10/15 14:00:09 found no extra config, skip it, err: open /opt/aws/aws-otel-collector/etc/extracfg.txt: no such file or directory
+2023/10/15 14:00:09 attn: users of the statsd receiver please refer to https://github.com/aws-observability/aws-otel-collector/issues/2249 in regards to an ADOT Collector v0.33.0 breaking change
+2023/10/15 14:00:09 attn: users of the awscontainerinsightreceiver please refer to https://github.com/aws-observability/aws-otel-collector/issues/2317 in regards to an ADOT Collector v0.35.0 breaking change
+2023-10-15T14:00:09.153Z        info    service/telemetry.go:84 Setting up own telemetry...
+2023-10-15T14:00:09.153Z        info    service/telemetry.go:201        Serving Prometheus metrics      {"address": ":8888", "level": "Basic"}
+2023-10-15T14:00:09.156Z        info    service/service.go:138  Starting aws-otel-collector...  {"Version": "v0.33.3", "NumCPU": 2}
+2023-10-15T14:00:09.156Z        info    extensions/extensions.go:31     Starting extensions...
+2023-10-15T14:00:09.156Z        warn    internal@v0.84.0/warning.go:40  Using the 0.0.0.0 address exposes this server to every network interface, which may facilitate Denial of Service attacks       {"kind": "receiver", "name": "otlp", "data_type": "traces", "documentation": "https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/security-best-practices.md#safeguards-against-denial-of-service-attacks"}
+2023-10-15T14:00:09.156Z        info    otlpreceiver@v0.84.0/otlp.go:83 Starting GRPC server    {"kind": "receiver", "name": "otlp", "data_type": "traces", "endpoint": "0.0.0.0:4317"}
+2023-10-15T14:00:09.156Z        info    service/service.go:161  Everything is ready. Begin running and processing data.
+```
+
+Now, OpenTelemetry Collector is running. Please leave this tap open and open new tab on next section.
+
+Congratulations!! You have completed this section. Please continue on [Automatic Instrumentation (Traces to AWS X-Ray)](4-auto-trace-x-ray.md)
 
 ---
 
@@ -328,4 +354,5 @@ Congratulations!! You have completed this section. Please continue on [Running A
 - [Managing Amazon EKS add-ons](https://docs.aws.amazon.com/eks/latest/userguide/managing-add-ons.html)
 - [Getting Started with AWS Distro for OpenTelemetry using EKS Add-Ons](https://aws-otel.github.io/docs/getting-started/adot-eks-add-on)
 - [Collector Configuration for AWS X-Ray](https://aws-otel.github.io/docs/getting-started/adot-eks-add-on/config-xray)
+- [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/)
 ---
