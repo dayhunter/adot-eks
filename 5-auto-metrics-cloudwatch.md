@@ -5,9 +5,9 @@
 1.1 Deploy the ADOT Collector
 
 ```sh
-cd ~/environment/workshop/5-auto-metrics-cloudwatch/
-sed -i -e s/\<AWS_REGION\>/${AWS_REGION}/g otel-collector-config.yaml
-kubectl apply -f otel-collector-config.yaml
+cd ~/environment
+sed -i -e s/\<AWS_REGION\>/${AWS_REGION}/g ~/environment/adot-eks/workshop/5-auto-metrics-cloudwatch/otel-collector-config.yaml
+kubectl apply -f ~/environment/adot-eks/workshop/5-auto-metrics-cloudwatch/otel-collector-config.yaml
 ```
 ##### Result Output
 ```sh
@@ -39,11 +39,11 @@ spec:
 
     exporters:
       awsemf:
-        region: 'us-east-2'
+        region: '<AWS_REGION>'
         log_group_name: '/metrics/otel'
         log_stream_name: 'otel-using-java'
       awsxray:
-        region: us-east-2
+        region: <AWS_REGION>
 
     service:
       pipelines:
@@ -85,16 +85,65 @@ Now, OpenTelemetry Collector is running. Please leave this tap open and open new
 
 ## 2. Deploy application
 
-2.1 Create `hello-app` pod and service
+2.1 Update `hello-app` deployment
 
 ```sh
-kubectl apply -f ~/environment/workshop/5-auto-metrics-cloudwatch/hello-app
+sed -i -e s/\<AWS_REGION\>/${AWS_REGION}/g -e s/\<ACCOUNT_ID\>/${ACCOUNT_ID}/g ~/environment/adot-eks/workshop/5-auto-metrics-cloudwatch/hello-app/deployment.yaml
+kubectl apply -f ~/environment/adot-eks/workshop/5-auto-metrics-cloudwatch/hello-app
 ```
 ##### Result Output
 ```
 deployment.apps/hello-app configured
-service/hello-app unchanged
-serviceaccount/hello-app unchanged
+```
+
+Deployment yaml file
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-app
+  namespace: hello-app
+  labels:
+    app.kubernetes.io/created-by: eks-workshop
+    app.kubernetes.io/type: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hello-app
+      app.kubernetes.io/instance: hello-app
+      app.kubernetes.io/component: service
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hello-app
+        app.kubernetes.io/instance: hello-app
+        app.kubernetes.io/component: service
+        app.kubernetes.io/created-by: eks-workshop
+    spec:
+      serviceAccountName: hello-app
+      containers:
+        - name: hello-app
+          env:
+            - name: OTEL_TRACES_EXPORTER
+              value: otlp
+            - name: OTEL_METRICS_EXPORTER
+              value: otlp
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://adot-collector.otel:4317
+          image: "273168336574.dkr.ecr.us-east-2.amazonaws.com/hello-app:latest"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 1Gi
 ```
 
 1.2 Check that application is ready with the following command
@@ -152,6 +201,9 @@ kubectl exec -it ${HELLO_APP_POD_NAME}  -n hello-app -- sh
 ```
 
 1.6 Invoke API inside Pod `sh`
+
+You can invoke API as much as you want (5-10 invocations)
+
 ```sh
 curl -X GET http://localhost:8888/hello
 ```
@@ -176,14 +228,14 @@ In `Browse` tab, you will see `hello-app` shows in the `Custom namespaces`. Sele
 
 2.3 You will list of `Metrics`
 
-Select metrics name: `http.server.requests`, You 
+Select metrics name: `http.server.requests`, You will see
 
-<img src="./images/auto_trace_hello_app_select.png" width=80%/>
+<img src="./images/auto_metrics_hello_app_result.png" width=80%/>
 
 
 2.4 You will see `Segment Timelines` detail as belows
 
-<img src="./images/auto_trace_hello_app_segment.png" width=80%/>
+<img src="./images/auto_metrics_hello_app_result.png" width=80%/>
 
 
 Congratulations!! You have completed this section. Please continue on [Environment Variable](6-environment-variable.md)

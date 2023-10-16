@@ -2,16 +2,64 @@
 
 ## 1. Deploy application
 
-1.1 Create `hello-app` pod and service
+1.1 Update `hello-app` deployment
 
 ```sh
-kubectl apply -f ~/environment/workshop/4-auto-trace-x-ray/hello-app
+cd ~/environment
+sed -i -e s/\<AWS_REGION\>/${AWS_REGION}/g -e s/\<ACCOUNT_ID\>/${ACCOUNT_ID}/g ~/environment/adot-eks/workshop/4-auto-trace-x-ray/hello-app/deployment.yaml
+kubectl apply -f ~/environment/adot-eks/workshop/4-auto-trace-x-ray/hello-app
 ```
 ##### Result Output
 ```
 deployment.apps/hello-app configured
-service/hello-app unchanged
-serviceaccount/hello-app unchanged
+```
+
+Deployment yaml file
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-app
+  namespace: hello-app
+  labels:
+    app.kubernetes.io/created-by: eks-workshop
+    app.kubernetes.io/type: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hello-app
+      app.kubernetes.io/instance: hello-app
+      app.kubernetes.io/component: service
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hello-app
+        app.kubernetes.io/instance: hello-app
+        app.kubernetes.io/component: service
+        app.kubernetes.io/created-by: eks-workshop
+    spec:
+      serviceAccountName: hello-app
+      containers:
+        - name: hello-app
+          env:
+            - name: OTEL_TRACES_EXPORTER
+              value: otlp
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://adot-collector.otel:4317
+          image: "<ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/hello-app:latest"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 1Gi
 ```
 
 1.2 Check that application is ready with the following command
@@ -97,11 +145,9 @@ Select trace record to view detail
 
 <img src="./images/auto_trace_hello_app_select.png" width=80%/>
 
-
 2.4 You will see `Segment Timelines` detail as belows
 
 <img src="./images/auto_trace_hello_app_segment.png" width=80%/>
-
 
 Congratulations!! You have completed this section. Please continue on [Automatic Instrumentation (Metrics to CloudWatch Metrics)](5-auto-metrics-cloudwatch.md)
 

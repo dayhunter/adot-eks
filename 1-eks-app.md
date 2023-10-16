@@ -1,11 +1,12 @@
 # Running Application on EKS
 
+Please complete [Environment Setup](0-environment-setup.md) before start this section.
+
 ## 1. Create an ECR Repository
 
 1.1 In the AWS Management Console, navigate to `Amazon ECR`.
 
 <img src="./images/navigate_to_ecr.png" width=80%/>
-
 
 1.2 Click on `Get Started` to create a repository.
 
@@ -40,7 +41,7 @@ git clone https://github.com/build-on-aws/instrumenting-java-apps-using-opentele
 2.2 Create Dockerfile
 
 ```sh
-cd instrumenting-java-apps-using-opentelemetry
+cd ~/environment/instrumenting-java-apps-using-opentelemetry
 touch Dockerfile
 ```
 
@@ -98,13 +99,64 @@ docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/hello-app:latest
 4.1 Create `hello-app` namespace
 
 ```sh
-kubectl apply -f ~/environment/workshop/1-eks-app/namespace.yaml 
+cd ~/environment
+kubectl apply -f ~/environment/adot-eks/workshop/1-eks-app/namespace.yaml 
 ```
 
 4.2 Create `hello-app` pod and service
 
 ```sh
-kubectl apply -f ~/environment/workshop/1-eks-app/hello-app
+sed -i -e s/\<AWS_REGION\>/${AWS_REGION}/g -e s/\<ACCOUNT_ID\>/${ACCOUNT_ID}/g ~/environment/adot-eks/workshop/1-eks-app/hello-app/deployment.yaml
+kubectl apply -f ~/environment/adot-eks/workshop/1-eks-app/hello-app
+```
+##### Result Output
+```
+deployment.apps/hello-app created
+service/hello-app created
+serviceaccount/hello-app created
+```
+
+Deployment yaml file
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-app
+  namespace: hello-app
+  labels:
+    app.kubernetes.io/created-by: eks-workshop
+    app.kubernetes.io/type: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hello-app
+      app.kubernetes.io/instance: hello-app
+      app.kubernetes.io/component: service
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hello-app
+        app.kubernetes.io/instance: hello-app
+        app.kubernetes.io/component: service
+        app.kubernetes.io/created-by: eks-workshop
+    spec:
+      serviceAccountName: hello-app
+      containers:
+        - name: hello-app
+          image: "<ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/hello-app:latest"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 1Gi
 ```
 
 4.3 Check that application is ready with the following command
@@ -123,6 +175,27 @@ hello-app-5887979795-8ldn7   1/1     Running   0          10s
 ```sh
 export HELLO_APP_POD_NAME=$(kubectl get pods -n hello-app -o jsonpath='{.items[].metadata.name}')
 kubectl logs -f ${HELLO_APP_POD_NAME} -n hello-app
+```
+##### Result Output
+```
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.1.2)
+
+2023-10-16T09:30:11.432Z  INFO 1 --- [           main] tutorial.buildon.aws.o11y.HelloApp       : Starting HelloApp v1.0 using Java 17 with PID 1 (/usr/src/app/target/hello-app-1.0.jar started by root in /usr/src/app)
+2023-10-16T09:30:11.438Z  INFO 1 --- [           main] tutorial.buildon.aws.o11y.HelloApp       : No active profile set, falling back to 1 default profile: "default"
+2023-10-16T09:30:13.966Z  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8888 (http)
+2023-10-16T09:30:13.983Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-10-16T09:30:13.983Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.11]
+2023-10-16T09:30:14.172Z  INFO 1 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-10-16T09:30:14.173Z  INFO 1 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2555 ms
+2023-10-16T09:30:15.481Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'
+2023-10-16T09:30:15.612Z  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8888 (http) with context path ''
+2023-10-16T09:30:15.641Z  INFO 1 --- [           main] tutorial.buildon.aws.o11y.HelloApp       : Started HelloApp in 5.137 seconds (process running for 6.566)
 ```
 
 4.5 Open `new Terminal`
@@ -145,32 +218,10 @@ curl -X GET http://localhost:8888/hello
 {"message":"Hello World"}
 ```
 
-4.8 On `logging` tab, you will see output as below
+4.8 On `logging` tab, you will see output message `The response is valid.` as below
 
 ```
-
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::                (v3.1.2)
-
-2023-10-15T08:09:49.606Z  INFO 1 --- [           main] tutorial.buildon.aws.o11y.HelloApp       : Starting HelloApp v1.0 using Java 17 with PID 1 (/usr/src/app/target/hello-app-1.0.jar started by root in /usr/src/app)
-2023-10-15T08:09:49.613Z  INFO 1 --- [           main] tutorial.buildon.aws.o11y.HelloApp       : No active profile set, falling back to 1 default profile: "default"
-2023-10-15T08:09:51.746Z  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8888 (http)
-2023-10-15T08:09:51.763Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2023-10-15T08:09:51.765Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.11]
-2023-10-15T08:09:51.970Z  INFO 1 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2023-10-15T08:09:51.971Z  INFO 1 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2273 ms
-2023-10-15T08:09:53.361Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'
-2023-10-15T08:09:53.514Z  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8888 (http) with context path ''
-2023-10-15T08:09:53.549Z  INFO 1 --- [           main] tutorial.buildon.aws.o11y.HelloApp       : Started HelloApp in 5.048 seconds (process running for 6.197)
-2023-10-15T08:14:24.933Z  INFO 1 --- [nio-8888-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2023-10-15T08:14:24.934Z  INFO 1 --- [nio-8888-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2023-10-15T08:14:24.936Z  INFO 1 --- [nio-8888-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
-2023-10-15T08:14:25.010Z  INFO 1 --- [nio-8888-exec-2] t.buildon.aws.o11y.HelloAppController    : The response is valid.
+2023-10-16T09:31:27.604Z  INFO 1 --- [nio-8888-exec-1] t.buildon.aws.o11y.HelloAppController    : The response is valid.
 ```
 
 Congratulations!! You have completed this section. Please continue on [Using OpenTelemetry Agent for Automatic instrument](2-eks-app-otel-agent.md)

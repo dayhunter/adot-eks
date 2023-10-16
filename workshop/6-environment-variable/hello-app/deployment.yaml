@@ -39,7 +39,7 @@ spec:
               value: "5000"
             - name: OTEL_RESOURCE_ATTRIBUTES # Key-value pairs to be used as resource attributes
               value: service.name=hello-app,service.version=1.0,deployment.environment=production
-          image: "273168336574.dkr.ecr.us-east-2.amazonaws.com/hello-app:latest"
+          image: "<ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/hello-app:latest"
           imagePullPolicy: Always
           ports:
             - name: http

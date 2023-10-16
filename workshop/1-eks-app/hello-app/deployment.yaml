@@ -24,7 +24,7 @@ spec:
       serviceAccountName: hello-app
       containers:
         - name: hello-app
-          image: "273168336574.dkr.ecr.us-east-2.amazonaws.com/hello-app:latest"
+          image: "<ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/hello-app:latest"
           imagePullPolicy: Always
           ports:
             - name: http

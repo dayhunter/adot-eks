@@ -5,7 +5,7 @@
 1.1 Access to `instrumenting-java-apps-using-opentelemetry` project folder. 
 
 ```sh
-cd instrumenting-java-apps-using-opentelemetry
+cd ~/environment/instrumenting-java-apps-using-opentelemetry
 ```
 
 1.2 Open `pom.xml` file. 
@@ -158,20 +158,16 @@ docker tag hello-app:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/he
 docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/hello-app:latest
 ```
 
-
 ## 3. Deploy application
 
-3.1 Create `hello-app` pod and service
+3.1 Update `hello-app` deployment
 
 ```sh
-kubectl delete -f ~/environment/workshop/7-manual-trace-x-ray/hello-app
-kubectl apply -f ~/environment/workshop/7-manual-trace-x-ray/hello-app
+kubectl rollout restart deploy hello-app -n hello-app
 ```
 ##### Result Output
 ```
-deployment.apps/hello-app created
-service/hello-app created
-serviceaccount/hello-app created
+deployment.apps/hello-app restarted
 ```
 
 3.2 Check that application is ready with the following command
@@ -263,7 +259,7 @@ Select trace record to view detail
 <img src="./images/manual_trace_hello_app_segment.png" width=80%/>
 
 
-Congratulations!! You have completed this section. Please continue on [Running Application on EKS](2_eks_app.md)
+Congratulations!! You have completed this section. Please continue on [Manual Instrumentation (Metrics to CloudWatch Metrics)](8-manual-metrics-cloudwatch.md)
 
 ---
 

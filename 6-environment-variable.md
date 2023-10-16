@@ -2,16 +2,73 @@
 
 ## 1. Deploy application
 
-1.1 Create `hello-app` pod and service
+1.1 Update `hello-app` deployment
 
 ```sh
-kubectl apply -f ~/environment/workshop/6-environment-variable/hello-app
+sed -i -e s/\<AWS_REGION\>/${AWS_REGION}/g -e s/\<ACCOUNT_ID\>/${ACCOUNT_ID}/g ~/environment/adot-eks/workshop/6-environment-variable/hello-app/deployment.yaml
+kubectl apply -f ~/environment/adot-eks/workshop/6-environment-variable/hello-app
 ```
 ##### Result Output
 ```
 deployment.apps/hello-app configured
-service/hello-app unchanged
-serviceaccount/hello-app unchanged
+```
+
+Deployment yaml file
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-app
+  namespace: hello-app
+  labels:
+    app.kubernetes.io/created-by: eks-workshop
+    app.kubernetes.io/type: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hello-app
+      app.kubernetes.io/instance: hello-app
+      app.kubernetes.io/component: service
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hello-app
+        app.kubernetes.io/instance: hello-app
+        app.kubernetes.io/component: service
+        app.kubernetes.io/created-by: eks-workshop
+    spec:
+      serviceAccountName: hello-app
+      containers:
+        - name: hello-app
+          env:
+            - name: OTEL_TRACES_EXPORTER
+              value: otlp
+            - name: OTEL_METRICS_EXPORTER
+              value: otlp
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://adot-collector.otel:4317
+            - name: OTEL_TRACES_SAMPLER # Sampler to be used for traces
+              value: always_on
+            - name: OTEL_IMR_EXPORT_INTERVAL # sets the export interval between pushes to the exporter.
+              value: "5000"
+            - name: OTEL_METRIC_EXPORT_INTERVAL # The time interval (in milliseconds) between the start of two export attempts.
+              value: "5000"
+            - name: OTEL_RESOURCE_ATTRIBUTES # Key-value pairs to be used as resource attributes
+              value: service.name=hello-app,service.version=1.0,deployment.environment=production
+          image: "<ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/hello-app:latest"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 1Gi
 ```
 
 1.2 Check that application is ready with the following command
@@ -55,10 +112,6 @@ OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader clas
 2023-10-15T18:56:23.330Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'
 2023-10-15T18:56:23.572Z  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8888 (http) with context path ''
 2023-10-15T18:56:23.602Z  INFO 1 --- [           main] tutorial.buildon.aws.o11y.HelloApp       : Started HelloApp in 5.499 seconds (process running for 11.211)
-2023-10-15T18:57:07.284Z  INFO 1 --- [nio-8888-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2023-10-15T18:57:07.286Z  INFO 1 --- [nio-8888-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2023-10-15T18:57:07.289Z  INFO 1 --- [nio-8888-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
-2023-10-15T18:57:07.398Z  INFO 1 --- [nio-8888-exec-1] t.buildon.aws.o11y.HelloAppController    : The response is valid.
 ```
 
 1.4 Open `new Terminal`

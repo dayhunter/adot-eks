@@ -190,9 +190,9 @@ arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy grants access to write the C
 3.2 Deploy the ADOT Collector
 
 ```sh
-cd ~/environment/workshop/3-eks-adot-add-on/
-sed -i -e s/\<AWS_REGION\>/${AWS_REGION}/g otel-collector-config.yaml
-kubectl apply -f otel-collector-config.yaml
+cd ~/environment
+sed -i -e s/\<AWS_REGION\>/${AWS_REGION}/g ~/environment/adot-eks/workshop/3-eks-adot-add-on/otel-collector-config.yaml
+kubectl apply -f ~/environment/adot-eks/workshop/3-eks-adot-add-on/otel-collector-config.yaml
 ```
 ##### Result Output
 ```sh
@@ -243,52 +243,52 @@ kubectl describe pod $OTEL_COLLECTOR_POD_NAME -n otel
 ```
 ##### Result Output
 ```
-Name:             my-adot-collector-collector-f8f976c4-lr7x9
+Name:             adot-collector-8476b755c6-6tmb8
 Namespace:        otel
 Priority:         0
 Service Account:  adot-collector
-Node:             ip-11-0-226-54.us-east-2.compute.internal/11.0.226.54
-Start Time:       Sat, 14 Oct 2023 15:04:16 +0000
+Node:             ip-11-0-162-21.us-east-2.compute.internal/11.0.162.21
+Start Time:       Mon, 16 Oct 2023 10:05:17 +0000
 Labels:           app.kubernetes.io/component=opentelemetry-collector
-                  app.kubernetes.io/instance=otel.my-adot-collector
+                  app.kubernetes.io/instance=otel.adot
                   app.kubernetes.io/managed-by=opentelemetry-operator
-                  app.kubernetes.io/name=my-adot-collector-collector
+                  app.kubernetes.io/name=adot-collector
                   app.kubernetes.io/part-of=opentelemetry
                   app.kubernetes.io/version=latest
-                  pod-template-hash=f8f976c4
-Annotations:      opentelemetry-operator-config/sha256: f47327fdfe6c3a16880e7bef550db9d5231e1ba257cec62cbc3febdc587944e1
+                  pod-template-hash=8476b755c6
+Annotations:      opentelemetry-operator-config/sha256: 5e555c3c76953e1447915d90847979032e32a0cf29e65ec945fd6e710690aeeb
                   prometheus.io/path: /metrics
                   prometheus.io/port: 8888
                   prometheus.io/scrape: true
 Status:           Running
-IP:               11.0.218.116
+IP:               11.0.188.142
 IPs:
-  IP:           11.0.218.116
-Controlled By:  ReplicaSet/my-adot-collector-collector-f8f976c4
+  IP:           11.0.188.142
+Controlled By:  ReplicaSet/adot-collector-8476b755c6
 Containers:
   otc-container:
-    Container ID:  containerd://f63699cfc816502f1621f4ca493409cf68e541f88f988bc18457a165062ef5fd
+    Container ID:  containerd://ced7001245f08603a7114118bcb9e1cef6b009b49749f453d99b25a26dba9a5a
     Image:         public.ecr.aws/aws-observability/aws-otel-collector:latest
-    Image ID:      public.ecr.aws/aws-observability/aws-otel-collector@sha256:598b4a2c32ab3b528ebaf9926c4845168ca4d0f2a28940cbd37c21da90954aae
-    Ports:         8888/TCP, 4317/TCP, 4318/TCP
-    Host Ports:    0/TCP, 0/TCP, 0/TCP
+    Image ID:      docker.io/amazon/aws-otel-collector@sha256:598b4a2c32ab3b528ebaf9926c4845168ca4d0f2a28940cbd37c21da90954aae
+    Ports:         8888/TCP, 4317/TCP
+    Host Ports:    0/TCP, 0/TCP
     Args:
       --config=/conf/collector.yaml
     State:          Running
-      Started:      Sat, 14 Oct 2023 15:04:19 +0000
+      Started:      Mon, 16 Oct 2023 10:05:18 +0000
     Ready:          True
     Restart Count:  0
     Environment:
-      POD_NAME:                     my-adot-collector-collector-f8f976c4-lr7x9 (v1:metadata.name)
+      POD_NAME:                     adot-collector-8476b755c6-6tmb8 (v1:metadata.name)
       AWS_STS_REGIONAL_ENDPOINTS:   regional
       AWS_DEFAULT_REGION:           us-east-2
       AWS_REGION:                   us-east-2
-      AWS_ROLE_ARN:                 arn:aws:iam::273168336574:role/eksctl-PetSite-addon-iamserviceaccount-otel-a-Role1-XD0bcqklFJpn
+      AWS_ROLE_ARN:                 arn:aws:iam::538334289408:role/eksctl-PetSite-addon-iamserviceaccount-otel-a-Role1-V6mVin6kQ5V5
       AWS_WEB_IDENTITY_TOKEN_FILE:  /var/run/secrets/eks.amazonaws.com/serviceaccount/token
     Mounts:
       /conf from otc-internal (rw)
       /var/run/secrets/eks.amazonaws.com/serviceaccount from aws-iam-token (ro)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-99pqz (ro)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-69t9c (ro)
 Conditions:
   Type              Status
   Initialized       True 
@@ -301,9 +301,9 @@ Volumes:
     TokenExpirationSeconds:  86400
   otc-internal:
     Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      my-adot-collector-collector
+    Name:      adot-collector
     Optional:  false
-  kube-api-access-99pqz:
+  kube-api-access-69t9c:
     Type:                    Projected (a volume that contains injected data from multiple sources)
     TokenExpirationSeconds:  3607
     ConfigMapName:           kube-root-ca.crt
@@ -316,11 +316,11 @@ Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists fo
 Events:
   Type    Reason     Age   From               Message
   ----    ------     ----  ----               -------
-  Normal  Scheduled  8s    default-scheduler  Successfully assigned otel/my-adot-collector-collector-f8f976c4-lr7x9 to ip-11-0-226-54.us-east-2.compute.internal
-  Normal  Pulling    7s    kubelet            Pulling image "public.ecr.aws/aws-observability/aws-otel-collector:latest"
-  Normal  Pulled     5s    kubelet            Successfully pulled image "public.ecr.aws/aws-observability/aws-otel-collector:latest" in 2.054673412s (2.054687894s including waiting)
-  Normal  Created    5s    kubelet            Created container otc-container
-  Normal  Started    5s    kubelet            Started container otc-container
+  Normal  Scheduled  31s   default-scheduler  Successfully assigned otel/adot-collector-8476b755c6-6tmb8 to ip-11-0-162-21.us-east-2.compute.internal
+  Normal  Pulling    30s   kubelet            Pulling image "public.ecr.aws/aws-observability/aws-otel-collector:latest"
+  Normal  Pulled     30s   kubelet            Successfully pulled image "public.ecr.aws/aws-observability/aws-otel-collector:latest" in 163.78129ms (163.804833ms including waiting)
+  Normal  Created    30s   kubelet            Created container otc-container
+  Normal  Started    30s   kubelet            Started container otc-container
 ```
 
 3.4 Check Opentelemetry Collector Pod Log
@@ -331,17 +331,17 @@ kubectl logs -f $OTEL_COLLECTOR_POD_NAME -n otel
 ```
 ##### Result Output
 ```
-2023/10/15 14:00:09 ADOT Collector version: v0.33.3
-2023/10/15 14:00:09 found no extra config, skip it, err: open /opt/aws/aws-otel-collector/etc/extracfg.txt: no such file or directory
-2023/10/15 14:00:09 attn: users of the statsd receiver please refer to https://github.com/aws-observability/aws-otel-collector/issues/2249 in regards to an ADOT Collector v0.33.0 breaking change
-2023/10/15 14:00:09 attn: users of the awscontainerinsightreceiver please refer to https://github.com/aws-observability/aws-otel-collector/issues/2317 in regards to an ADOT Collector v0.35.0 breaking change
-2023-10-15T14:00:09.153Z        info    service/telemetry.go:84 Setting up own telemetry...
-2023-10-15T14:00:09.153Z        info    service/telemetry.go:201        Serving Prometheus metrics      {"address": ":8888", "level": "Basic"}
-2023-10-15T14:00:09.156Z        info    service/service.go:138  Starting aws-otel-collector...  {"Version": "v0.33.3", "NumCPU": 2}
-2023-10-15T14:00:09.156Z        info    extensions/extensions.go:31     Starting extensions...
-2023-10-15T14:00:09.156Z        warn    internal@v0.84.0/warning.go:40  Using the 0.0.0.0 address exposes this server to every network interface, which may facilitate Denial of Service attacks       {"kind": "receiver", "name": "otlp", "data_type": "traces", "documentation": "https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/security-best-practices.md#safeguards-against-denial-of-service-attacks"}
-2023-10-15T14:00:09.156Z        info    otlpreceiver@v0.84.0/otlp.go:83 Starting GRPC server    {"kind": "receiver", "name": "otlp", "data_type": "traces", "endpoint": "0.0.0.0:4317"}
-2023-10-15T14:00:09.156Z        info    service/service.go:161  Everything is ready. Begin running and processing data.
+2023/10/16 10:05:18 ADOT Collector version: v0.33.3
+2023/10/16 10:05:18 found no extra config, skip it, err: open /opt/aws/aws-otel-collector/etc/extracfg.txt: no such file or directory
+2023/10/16 10:05:18 attn: users of the statsd receiver please refer to https://github.com/aws-observability/aws-otel-collector/issues/2249 in regards to an ADOT Collector v0.33.0 breaking change
+2023/10/16 10:05:18 attn: users of the awscontainerinsightreceiver please refer to https://github.com/aws-observability/aws-otel-collector/issues/2317 in regards to an ADOT Collector v0.35.0 breaking change
+2023-10-16T10:05:18.569Z        info    service/telemetry.go:84 Setting up own telemetry...
+2023-10-16T10:05:18.569Z        info    service/telemetry.go:201        Serving Prometheus metrics      {"address": ":8888", "level": "Basic"}
+2023-10-16T10:05:18.571Z        info    service/service.go:138  Starting aws-otel-collector...  {"Version": "v0.33.3", "NumCPU": 2}
+2023-10-16T10:05:18.571Z        info    extensions/extensions.go:31     Starting extensions...
+2023-10-16T10:05:18.571Z        warn    internal@v0.84.0/warning.go:40  Using the 0.0.0.0 address exposes this server to every network interface, which may facilitate Denial of Service attacks       {"kind": "receiver", "name": "otlp", "data_type": "traces", "documentation": "https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/security-best-practices.md#safeguards-against-denial-of-service-attacks"}
+2023-10-16T10:05:18.571Z        info    otlpreceiver@v0.84.0/otlp.go:83 Starting GRPC server    {"kind": "receiver", "name": "otlp", "data_type": "traces", "endpoint": "0.0.0.0:4317"}
+2023-10-16T10:05:18.571Z        info    service/service.go:161  Everything is ready. Begin running and processing data.
 ```
 
 Now, OpenTelemetry Collector is running. Please leave this tap open and open new tab on next section.
