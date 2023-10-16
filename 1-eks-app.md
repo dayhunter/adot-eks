@@ -179,4 +179,5 @@ Congratulations!! You have completed this section. Please continue on [Using Ope
 
 ## References
 - [Containers Zero to One Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/613d57e0-6ae0-4fdc-bdb8-dac3930c2ec9/en-US)
+- [Instrumenting Java Applications with OpenTelemetry](https://community.aws/tutorials/instrumenting-java-apps-using-opentelemetry)
 ---

@@ -1,4 +1,4 @@
-This workshop built on top of [One Observability Workshop](https://catalog.workshops.aws/observability/en-US) https://catalog.workshops.aws/observability/en-US
+This workshop built on top of [One Observability Workshop](https://catalog.workshops.aws/observability/en-US) https://catalog.workshops.aws/observability/en-US and [Instrumenting Java Applications with OpenTelemetry](https://community.aws/tutorials/instrumenting-java-apps-using-opentelemetry)
 
 # AWS Distro for OpenTelemetry on EKS
 
@@ -32,6 +32,8 @@ git clone https://github.com/dayhunter/adot-eks.git
 5. [Automatic Instrumentation (Metrics to CloudWatch Metrics)](5-auto-metrics-cloudwatch.md)
 6. [Environment Variable](6-environment-variable.md)
 7. [Manual Instrumentation (Traces to AWS X-Ray)](7-manual-trace-x-ray.md)
-7. [Manual Instrumentation (Metrics to CloudWatch Metrics](8-manual-metrics-cloudwatch.md)
+8. [Manual Instrumentation (Metrics to CloudWatch Metrics](8-manual-metrics-cloudwatch.md)
+8. [Manual Instrumentation (Metrics to CloudWatch Metrics](8-manual-metrics-cloudwatch.md)
+9. [Tracing with Micronaut Framework](8-manual-metrics-cloudwatch.md)
 
 ---
