@@ -13,6 +13,16 @@ By the end of this workshop you will have learned the following:
 
 ---
 
+## Instruction and Resources
+
+Please clone this repository to Cloud9 environment and follow instructions on `Table of contents` section
+
+```sh
+git clone https://github.com/dayhunter/adot-eks.git
+```
+
+---
+
 ## Table of contents
 
 1. [Running Application on EKS](1-eks-app.md)
@@ -22,5 +32,6 @@ By the end of this workshop you will have learned the following:
 5. [Automatic Instrumentation (Metrics to CloudWatch Metrics)](5-auto-metrics-cloudwatch.md)
 6. [Environment Variable](6-environment-variable.md)
 7. [Manual Instrumentation (Traces to AWS X-Ray)](7-manual-trace-x-ray.md)
+7. [Manual Instrumentation (Metrics to CloudWatch Metrics](8-manual-metrics-cloudwatch.md)
 
 ---
