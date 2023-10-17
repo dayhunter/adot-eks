@@ -1,0 +1,38 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: adot
+  namespace: otel
+spec:
+  image: public.ecr.aws/aws-observability/aws-otel-collector:latest
+  mode: deployment
+  serviceAccount: adot-collector
+  config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+    processors:
+      batch:
+        timeout: 5s
+        send_batch_size: 1024
+
+    exporters:
+      awsemf:
+        region: '<AWS_REGION>'
+        log_group_name: '/metrics/otel'
+        log_stream_name: 'otel-using-java-micronuat'
+      awsxray:
+        region: <AWS_REGION>
+
+    service:
+      pipelines:
+        metrics:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [awsemf]
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [awsxray]

@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: example.micronaut
+testFramework: junit
+sourceLanguage: java
+buildTool: gradle
+features: [app-name, aws-v2-sdk, dynamodb, gradle, http-client-test, java, java-application, junit, ksuid, logback, management, micronaut-aot, micronaut-build, netty-server, readme, serialization-jackson, shade, testcontainers, tracing-opentelemetry-annotations, tracing-opentelemetry-exporter-otlp, tracing-opentelemetry-http, tracing-opentelemetry-xray, validation, yaml, yaml-build]

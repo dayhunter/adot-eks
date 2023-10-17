@@ -1,0 +1,1 @@
+{"groups":[{"name":"dynamodb","type":"example.micronaut.DynamoConfiguration"}],"properties":[{"name":"dynamodb.table-name","type":"java.lang.String","sourceType":"example.micronaut.DynamoConfiguration"}]}

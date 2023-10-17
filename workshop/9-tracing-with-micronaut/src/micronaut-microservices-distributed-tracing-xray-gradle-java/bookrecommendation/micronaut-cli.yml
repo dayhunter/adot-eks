@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: example.micronaut
+testFramework: junit
+sourceLanguage: java
+buildTool: gradle
+features: [app-name, gradle, http-client, java, java-application, junit, logback, management, micronaut-aot, micronaut-build, netty-server, reactor, reactor-http-client, readme, retry, serialization-jackson, shade, tracing-opentelemetry-annotations, tracing-opentelemetry-exporter-otlp, tracing-opentelemetry-http, tracing-opentelemetry-xray, validation, yaml, yaml-build]
