@@ -2,8 +2,11 @@
 
 ## Workshop Environment
 
-1. Setup cloud9 by follow on [Setup Cloud9 (optional)](https://catalog.us-east-1.prod.workshops.aws/event/dashboard/en-US/workshop/workshopstudio/setup-cloud9)
+1. Setup cloud9 by follow on [Setup Cloud9](https://catalog.us-east-1.prod.workshops.aws/event/dashboard/en-US/workshop/workshopstudio/setup-cloud9). 
 
+Please skip `Install CDK packages` step 11 and 12
+
+<img src="./images/cloud9_setup.png" width=80%/>
 
 2. Clone `workshop` script
 

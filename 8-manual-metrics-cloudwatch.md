@@ -243,7 +243,7 @@ In `Browse` tab, you will see `hello-app` shows in the `Custom namespaces`. Sele
 
 Select metric in the list and choose view as "Gauge"
 
-<img src="./images/auto_trace_hello_app_select.png" width=80%/>
+<img src="./images/manual_metric_hello_app_result.png" width=80%/>
 
 2.4 You also can select on `Source` tab and apply following JSON code then click on `Update` button.
 
