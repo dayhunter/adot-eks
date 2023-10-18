@@ -1,10 +1,7 @@
 This workshop built on top of 
 - [One Observability Workshop: ](https://catalog.workshops.aws/observability/en-US)
-    https://catalog.workshops.aws/observability/en-US
 - [Instrumenting Java Applications with OpenTelemetry: ](https://community.aws/tutorials/instrumenting-java-apps-using-opentelemetry)
-    https://community.aws/tutorials/instrumenting-java-apps-using-opentelemetry
 - [Microservices Distributed  tracing with Opentelemetry through X-Ray and the micronaut framwork: ](https://guides.micronaut.io/latest/micronaut-microservices-distributed-tracing-xray-gradle-java.html)
-    https://guides.micronaut.io/latest/micronaut-microservices-distributed-tracing-xray-gradle-java.html
 
 # AWS Distro for OpenTelemetry on EKS
 
