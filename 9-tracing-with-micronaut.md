@@ -258,6 +258,8 @@ curl -X GET http://bookrecommendation.bookrecommendation:8080/books
 [{"name":"Building Microservices"},{"name":"Continuous Delivery"},{"name":"Release It!"}]
 ```
 
+Congratulations!! Now, we can look into the `AWS X-Ray` and `Amazon CloudWatch Metrics` to see the result.
+
 ---
 
 ## References

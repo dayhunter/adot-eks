@@ -274,6 +274,13 @@ You will see graph as below.:
 
 <img src="./images/manual_metric_hello_app_result_json.png" width=80%/>
 
+## 5. Cleanup `hello-app` pod
+
+```sh
+kubectl delete -f ~/environment/adot-eks/workshop/6-environment-variable/hello-app
+```
+
+
 Congratulations!! You have completed this section. Please continue on [Tracing with Micronaut Framework](9-tracing-with-micronaut.md)
 
 ---
