@@ -20,4 +20,6 @@ git clone https://github.com/dayhunter/adot-eks.git
 git clone https://github.com/build-on-aws/instrumenting-java-apps-using-opentelemetry.git -b build-on-aws-tutorial
 ```
 
+Congratulations!! You have completed this section. Please continue on [Running Application on EKS](1-eks-app.md)
+
 ---
