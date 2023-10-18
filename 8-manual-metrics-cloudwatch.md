@@ -280,7 +280,6 @@ You will see graph as below.:
 kubectl delete -f ~/environment/adot-eks/workshop/6-environment-variable/hello-app
 ```
 
-
 Congratulations!! You have completed this section. Please continue on [Tracing with Micronaut Framework](9-tracing-with-micronaut.md)
 
 ---

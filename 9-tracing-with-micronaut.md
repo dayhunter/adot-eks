@@ -260,6 +260,26 @@ curl -X GET http://bookrecommendation.bookrecommendation:8080/books
 
 Congratulations!! Now, we can look into the `AWS X-Ray` and `Amazon CloudWatch Metrics` to see the result.
 
+<img src="./images/micronaut_x_ray.png" width=80%/>
+
+---
+
+## Clean up
+
+Delete `microservices` resources
+
+```sh
+kubectl delete -f ~/environment/adot-eks/workshop/9-tracing-with-micronaut/k8s/bookcatalogue
+kubectl delete -f ~/environment/adot-eks/workshop/9-tracing-with-micronaut/k8s/bookinventory
+kubectl delete -f ~/environment/adot-eks/workshop/9-tracing-with-micronaut/k8s/bookrecommendation
+```
+
+Delete `DynamoDb` Table
+
+```sh
+aws dynamodb delete-table --table-name bookcatalogue
+```
+
 ---
 
 ## References
