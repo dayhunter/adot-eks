@@ -9,7 +9,7 @@
 
 1.2 Click on `Repository` and `Create repository`.
 
-<img src="./images/erc_create_new_repo_micronaut.png.png" width=80%/>
+<img src="./images/erc_create_new_repo_micronaut.png" width=80%/>
 
 1.3 Create an ECR repository `bookcatalogue`. 
 
